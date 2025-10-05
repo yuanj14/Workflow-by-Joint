@@ -5,7 +5,10 @@ import App from './digram/jointjs/App'
 const root = createRoot(document.getElementById('root')!)
 
 root.render(
-  // <StrictMode>
-    <App />
-  // </StrictMode>
+    //reload but prevent the unnormal situation from HMR
+    //if want to know what hooks of react work is, its necessary to open it 
+    //the real environment of dev : build and preview to see it
+    // <StrictMode>
+        <App />
+    // </StrictMode>
 )

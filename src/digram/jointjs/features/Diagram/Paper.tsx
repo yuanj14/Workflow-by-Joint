@@ -41,7 +41,7 @@ export default function Paper(): React.ReactElement {
 
   return (
     <div>
-      <h3>JointJS 事件处理</h3>
+      <h3>JointJS Paper画布</h3>
       <div ref={paperRef}></div>
     </div>
   );

@@ -24,6 +24,8 @@ export default defineConfig([
       '@typescript-eslint/no-unused-vars': 'off',
       // 禁用any类型检查规则
        '@typescript-eslint/no-explicit-any': 'off',
+       // 格式化不删除未保存变量
+       "no-unused-vars": "off",
     },
   },
 ]);

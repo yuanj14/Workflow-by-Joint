@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import {dia,shapes} from 'jointjs-plus'
+import {dia,shapes} from '@joint/plus'
 export default function PortComponent() {
     useEffect(() => {
         const namespace = shapes;

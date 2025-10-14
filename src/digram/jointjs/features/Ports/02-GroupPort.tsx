@@ -25,9 +25,10 @@ export default function GroupPortComponent() {
 
         const portsIn = {
             //端口位置
-            position: {
-                name: 'left'
-            },
+            markup: [{
+                tagName: 'circle',
+                selector: 'portBody'
+            }],
             attrs: {
                 portBody: {
                     magnet: true,
@@ -39,18 +40,13 @@ export default function GroupPortComponent() {
             label: {
                 position: {
                     name: 'left',
-                    args: { y: 6 }
+                    // args: { y: 6 }
                 },
                 markup: [{
                     tagName: 'text',
-                    selector: 'label',
-                    className: 'label-text'
+                    selector: 'porttext',
                 }]
-            },
-            markup: [{
-                tagName: 'circle',
-                selector: 'portBody'
-            }]
+            }
         };
 
         const portsOut = {
@@ -72,7 +68,7 @@ export default function GroupPortComponent() {
                 },
                 markup: [{
                     tagName: 'text',
-                    selector: 'label',
+                    selector: 'porttext',
                     className: 'label-text'
                 }]
             },
@@ -106,15 +102,15 @@ export default function GroupPortComponent() {
         model.addPorts([
             {
                 group: 'in',
-                attrs: { label: { text: 'in1' } }
+                attrs: { porttext: { text: 'in1' } }
             },
             {
                 group: 'in',
-                attrs: { label: { text: 'in2' } }
+                attrs: { porttext: { text: 'in2' } }
             },
             {
                 group: 'out',
-                attrs: { label: { text: 'out' } }
+                attrs: { porttext: { text: 'out' } }
             }
         ]);
 

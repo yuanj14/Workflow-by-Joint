@@ -23,8 +23,28 @@ export function useJointInit() {
                 model: graphRef.current!,
                 width: "100%",
                 height: 500,
+                async: true,
+                sorting: dia.Paper.sorting.APPROX,
                 cellViewNamespace: shapes,
                 background: { color: "#f5f5f5" },
+                snapLabels: true,
+                clickThreshold: 10,
+                interactive: {
+                    linkMove: false
+                },
+                gridSize: 5,
+                defaultConnectionPoint: {
+                    name: "boundary",
+                    args: {
+                        offset: 8,
+                        extrapolate: true
+                    }
+                },
+                defaultRouter: { name: "rightAngle", args: { margin: 4 * 7 } },
+                defaultConnector: {
+                    name: "rounded",
+                    // args: { cornerType: "line", cornerPreserveAspectRatio: true }
+                } // bevelled path
             });
             paperInstanceRef.current = paper;
             setPaper(paper)

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './digram/jointjs/App'
+//从这里一直点击App路径 找到最后一个进行加载项修改
 
 const root = createRoot(document.getElementById('root')!)
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import {dia,shapes} from '@joint/plus'
+import { dia, shapes } from '@joint/plus'
 export default function PortComponent() {
     useEffect(() => {
         const namespace = shapes;
@@ -32,10 +32,10 @@ export default function PortComponent() {
                 },
                 markup: [{
                     tagName: 'text',
-                    selector: 'label'
+                    selector: 'porttext'
                 }]
             },
-            //端口属性预设
+            //Body属性预设
             markup: [{
                 tagName: 'rect',
                 selector: 'portBody'
@@ -51,7 +51,7 @@ export default function PortComponent() {
                     y: -8,
                     fill: '#03071E'
                 },
-                label: {
+                porttext: {
                     text: 'port'
                 }
             }
@@ -77,7 +77,7 @@ export default function PortComponent() {
 
         return () => {
         }
-    }, [ ])
+    }, [])
 
     return (
         <div>

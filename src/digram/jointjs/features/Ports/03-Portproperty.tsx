@@ -16,8 +16,9 @@ export default function PortProperyComponent() {
             linkPinning: false, // Prevent link being dropped in blank paper area
             defaultLink: () => new shapes.standard.Link({
                 attrs: {
+                    // wrapper :hover link event
                     wrapper: {
-                        cursor: 'default'
+                        cursor: 'pointer'
                     }
                 }
             }),
@@ -29,9 +30,6 @@ export default function PortProperyComponent() {
         });
 
         const portsIn = {
-            position: {
-                name: 'left'
-            },
             label: {
                 position: {
                     name: 'left',
@@ -40,7 +38,6 @@ export default function PortProperyComponent() {
                 markup: [{
                     tagName: 'text',
                     selector: 'label',
-                    className: 'label-text'
                 }]
             },
             markup: [{
@@ -56,9 +53,8 @@ export default function PortProperyComponent() {
         };
 
         const portsOut = {
-            position: {
-                name: 'right'
-            },
+            // 外层positon 形状位置
+            position: { name: 'bottom' },
             attrs: {
                 portBody: {
                     magnet: true,
@@ -68,6 +64,7 @@ export default function PortProperyComponent() {
                 }
             },
             label: {
+                // 文本位置
                 position: {
                     name: 'right',
                     args: { y: 6 }
@@ -88,12 +85,9 @@ export default function PortProperyComponent() {
             position: { x: 125, y: 50 },
             size: { width: 90, height: 90 },
             attrs: {
-                root: {
-                    magnet: false
-                },
-                body: {
-                    fill: '#8ECAE6',
-                },
+                //自身不可连接 false 只可作为终点passive
+                root: { magnet: false },
+                body: { fill: '#8ECAE6', },
                 label: {
                     text: 'Model',
                     fontSize: 16,

@@ -1,23 +1,23 @@
-import React, { useEffect } from "react";
-import "../../css/text.css";
-import { dia, shapes } from "@joint/core";
+import { dia, shapes } from '@joint/core'
+import { useEffect } from 'react'
+import '../../css/text.css'
 
 export default function PaperComponent() {
   useEffect(() => {
-    const namespace = shapes;
-    const graph = new dia.Graph({}, { cellNamespace: namespace });
+    const namespace = shapes
+    const graph = new dia.Graph({}, { cellNamespace: namespace })
     const paper = new dia.Paper({
-      el: document.getElementById("paper"),
+      el: document.getElementById('paper'),
       model: graph,
       width: 300,
       height: 300,
-      background: { color: "#F5F5F5" },
+      background: { color: '#F5F5F5' },
       cellViewNamespace: namespace,
-    });
+    })
     return () => {
       // paper.remove();
-    };
-  }, []);
+    }
+  }, [])
 
   const codeExample = `const namespace = shapes; 
 const graph = new dia.Graph({}, { cellNamespace: namespace }); 
@@ -28,11 +28,13 @@ const paper = new dia.Paper({
   height: 300,
   background: { color: "#F5F5F5" },
   cellViewNamespace: namespace
-});`;
+});`
 
   return (
     <div className="container">
-      <div id="paper" style={{ border: "1px solid #ccc", marginBottom: "20px" }}></div>
+      <div
+        id="paper"
+        style={{ border: '1px solid #ccc', marginBottom: '20px' }}></div>
 
       <h2>Create Paper</h2>
       <p>
@@ -50,5 +52,5 @@ const paper = new dia.Paper({
         <code className="block">{codeExample}</code>
       </pre>
     </div>
-  );
+  )
 }

@@ -1,36 +1,8 @@
-import React from "react";
-import Indexrouter from "./test/router+ts/router/indexrouter";
-import { useEffect, useState } from "react";
-import store from "./test/router+ts/redux/store";
-export default function App() {
-  const [isshow, setIsshow] = useState(true);
+import { useEffect } from 'react'
+export default function () {
   useEffect(() => {
-    store.subscribe(() => {
-      console.log('store发生变化了');
-      setIsshow(store.getState().isShow);
-    });
+    // 全局APP配置
+  }, [])
 
-    return () => {};
-  }, []);
-
-  return (
-    <div>
-      <Indexrouter />
-      {isshow && (
-        <ul>
-          <li>电影</li>
-          <li>影院</li>
-          <li>我的</li>
-        </ul>
-      )}
-      {/* {flag && <div>123</div>}
-      <button onClick={() => {
-        flag = !flag;
-        console.log(flag);
-        
-      }}>
-        change
-      </button> */}
-    </div>
-  );
+  return <div>There is a router</div>
 }

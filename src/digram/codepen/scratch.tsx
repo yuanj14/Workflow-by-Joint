@@ -1,21 +1,17 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 export default function Scratch() {
-    useEffect(() => {
-      work();
-    
-      return () => {
-        
-      }
-    }, [])
-    
-    const work = () =>{
-        
-    }
+  useEffect(() => {
+    work()
+
+    return () => {}
+  }, [])
+
+  const work = () => {}
 
   return (
     <div>
-        <div id="paper"></div>
+      <div id="paper"></div>
     </div>
   )
 }

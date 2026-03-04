@@ -5,7 +5,7 @@ p {
 
 /* 内联代码样式 */
 code.inline {
-  font-family: "Roboto Mono", monospace;
+  font-family: 'Roboto Mono', monospace;
   /* 背景色调整为更浅的灰，接近目标的浅色调 */
   background-color: #89949f21;
   padding: 0.2em; /* 调整内边距，与目标 padding 更匹配 */
@@ -18,8 +18,8 @@ code.inline {
   vertical-align: middle;
 }
 
-code.block{
-    font-family: "Roboto Mono", monospace;
+code.block {
+  font-family: 'Roboto Mono', monospace;
   /* 背景色调整为更浅的灰，接近目标的浅色调 */
   /* background-color: #89949f21; */
   padding: 0.2em; /* 调整内边距，与目标 padding 更匹配 */
@@ -32,10 +32,9 @@ code.block{
   vertical-align: middle;
 }
 
-
 /* 多行代码块样式 */
 pre.code-block {
-  font-family: "Roboto Mono", monospace;
+  font-family: 'Roboto Mono', monospace;
   background-color: #89949f21;
   padding: 1em;
   border-radius: 6px;
@@ -53,4 +52,4 @@ body {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
-} 
+}

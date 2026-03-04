@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.3",
     "@types/rappid": "^1.5.36",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

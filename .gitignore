@@ -26,7 +26,3 @@ dist-ssr
 # No Open Source
 joint-plus.tgz
 joint-plus_trial.zip
-
-# Test 测试文件
-src\diagram\codepen\lab\Temp.tsx
-src\diagram\codepen\scss\Temp.module.scss

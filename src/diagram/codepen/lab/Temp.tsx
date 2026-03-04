@@ -1,12 +1,8 @@
-import { useMemo } from 'react'
 import styles from '../scss/Temp.module.scss'
 
 export default function Temp() {
-  const globalStyleA = useMemo(
-    () => `.title { color: #1677ff; font-weight: 700; }`,
-    [],
-  )
-  const globalStyleB = useMemo(() => `.title { color: #f5222d; }`, [])
+  const globalStyleA = `.title { color: #1677ff; font-weight: 700; }`
+  const globalStyleB = `.title { color: #f5222d; }`
 
   return (
     <div className={styles.page}>

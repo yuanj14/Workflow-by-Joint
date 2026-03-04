@@ -1,40 +1,53 @@
-import styles from '../scss/Temp.module.scss'
+// ✨ unplugin-auto-import 示例
+// 配置了 auto-import 后，useState / useEffect 等 React API
+// 无需手动 import，可以直接使用
+//
+// 未配置时你必须写：
+//   import { useState, useEffect } from 'react'
+//
+// 配置后可以省略上面这行，直接用 👇
 
 export default function Temp() {
-  const globalStyleA = `.title { color: #1677ff; font-weight: 700; }`
-  const globalStyleB = `.title { color: #f5222d; }`
+  // ✨ 直接使用，无需 import
+  const [count, setCount] = useState(0)
+  const [time, setTime] = useState(new Date().toLocaleTimeString())
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date().toLocaleTimeString())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
-    <div className={styles.page}>
-      <h2>CSS 冲突 vs SCSS Modules</h2>
+    <div style={{ padding: 32, fontFamily: 'monospace' }}>
+      <h2>unplugin-auto-import 示例</h2>
 
-      <section className={styles.block}>
-        <h3>1) 普通全局 CSS：容易冲突</h3>
-        <style>{globalStyleA}</style>
-        <style>{globalStyleB}</style>
-        <div className={styles.row}>
-          <div className={styles.card}>
-            <div className="title">
-              组件 A：期望蓝色，最终被后加载样式覆盖成红色
-            </div>
-          </div>
-          <div className={styles.card}>
-            <div className="title">组件 B：红色</div>
-          </div>
-        </div>
+      <section style={{ marginBottom: 24 }}>
+        <p>当前时间（useEffect + setInterval）：</p>
+        <strong style={{ fontSize: 24 }}>{time}</strong>
       </section>
 
-      <section className={styles.block}>
-        <h3>2) SCSS Modules：默认局部作用域</h3>
-        <div className={styles.row}>
-          <div className={styles.moduleCardA}>
-            <div className={styles.title}>模块 A 标题（蓝色）</div>
-          </div>
-          <div className={styles.moduleCardB}>
-            <div className={styles.title}>模块 B 标题（红色）</div>
-          </div>
-        </div>
+      <section>
+        <p>计数器（useState）：</p>
+        <button onClick={() => setCount((c) => c - 1)}>-</button>
+        <span style={{ margin: '0 16px', fontSize: 20 }}>{count}</span>
+        <button onClick={() => setCount((c) => c + 1)}>+</button>
       </section>
+
+      <pre
+        style={{
+          marginTop: 32,
+          background: '#f5f5f5',
+          padding: 16,
+          borderRadius: 8,
+        }}>
+        {`// ❌ 没有 auto-import，需要手动写：
+import { useState, useEffect } from 'react'
+
+// ✅ 配置 auto-import 后，这行可以删掉
+//    构建时会自动注入 import`}
+      </pre>
     </div>
   )
 }

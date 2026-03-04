@@ -1,6 +1,5 @@
-import { dia, shapes } from '@joint/core'
+import { dia, shapes } from '@joint/plus'
 import { useEffect } from 'react'
-import '../../css/text.css'
 
 export default function PaperComponent() {
   useEffect(() => {

@@ -1,9 +1,9 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import tseslint from 'typescript-eslint';
-import { defineConfig, globalIgnores } from 'eslint/config';
+import js from '@eslint/js'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -15,17 +15,14 @@ export default defineConfig([
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-    },
+    languageOptions: { ecmaVersion: 2020, globals: globals.browser },
     rules: {
       // 禁用未使用变量的检查规则
       '@typescript-eslint/no-unused-vars': 'off',
       // 禁用any类型检查规则
-       '@typescript-eslint/no-explicit-any': 'off',
-       // 格式化不删除未保存变量
-       "no-unused-vars": "off",
+      '@typescript-eslint/no-explicit-any': 'off',
+      // 格式化不删除未保存变量
+      'no-unused-vars': 'off',
     },
   },
-]);
+])

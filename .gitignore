@@ -24,8 +24,9 @@ dist-ssr
 *.sw?
 
 # No Open Source
-public/rappid.min.css
-public/rappid.min.js
 joint-plus.tgz
 joint-plus_trial.zip
-src/digram/jointjs/lib
+
+# Test 测试文件
+src\diagram\codepen\lab\Temp.tsx
+src\diagram\codepen\scss\Temp.module.scss

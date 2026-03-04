@@ -1,6 +1,6 @@
 import * as joint from '@joint/plus'
 import { useEffect } from 'react'
-import '../css/codepen/lab01.css'
+// import '../scss/lab01.scss'
 export default function Lab01() {
   useEffect(() => {
     work()

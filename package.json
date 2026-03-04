@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/css": "^11.13.5",
     "@joint/core": "^4.2.4",
     "@joint/plus": "file:joint-plus.tgz",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -36,6 +37,7 @@
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "prettier-plugin-packagejson": "^3.0.0",
+    "sass": "^1.97.3",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1"

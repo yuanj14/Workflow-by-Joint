@@ -1,4 +1,4 @@
-import APP from '../codepen/App'
+import APP from '../codepen'
 export default function App() {
   return <APP />
 }

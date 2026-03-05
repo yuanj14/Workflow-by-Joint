@@ -1,5 +1,4 @@
 import { dia, shapes, ui } from '@joint/plus'
-import { useEffect } from 'react'
 export default function EditComponent() {
   useEffect(() => {
     const namespace = shapes
@@ -12,8 +11,8 @@ export default function EditComponent() {
       background: { color: '#F5F5F5' },
       cellViewNamespace: namespace,
       defaultRouter: { name: 'orthogonal' },
-      defaultConnector: { name: 'straight', args: { cornerType: 'line' } },
-    })
+      defaultConnector: { name: 'jumpover', args: { type : 'cubic'} },
+    })    
     const rect1 = new shapes.standard.Rectangle()
       .position(50, 50)
       .resize(150, 50)
@@ -30,12 +29,11 @@ export default function EditComponent() {
         label: { text: 'liss', fill: 'black' },
       })
       .addTo(graph)
-    paper.on('cell:pointerup', (cell) => {
-      openHalo(cell)
+    paper.on('cell:pointerup', (cellView) => {
+      openHalo(cellView)
     })
-    //不知道 类型 源码
-    function openHalo(cell: any) {
-      new ui.Halo({ cellView: cell }).render()
+    function openHalo(cellView: any) {
+      new ui.Halo({ cellView: cellView }).render()
     }
     return () => {}
   }, [])

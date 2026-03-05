@@ -14,21 +14,16 @@ export default function ElementComponent() {
       cellViewNamespace: namespace,
     })
     // Create element
-    const rect1 = new shapes.standard.Rectangle()
-    rect1.position(50, 50)
-    rect1.resize(100, 40)
-    // const rect2 = new shapes.standard.Rectangle();
-    // rect2.position(200, 50);
-    // rect2.resize(100, 40);
-    // Set attributes
-    rect1.attr({
-      body: { stroke: '#C94A46', rx: 2, ry: 2 },
-      label: { text: 'Hello', fill: 'black' },
-    })
-    // rect2.attr({
-    //     body: { stroke: "#C94A46", rx: 2, ry: 2 },
-    //     label: { text: "JointJs", fill: "black" },
-    // });
+    const rectangle = new shapes.standard.Rectangle()
+    rectangle.resize(100, 100)
+    // 右上角坐标 rectangle
+    rectangle.position(0, 0)
+    rectangle.attr('root/title', '悬浮提示')
+    rectangle.attr('label/text', 'Rectangle')
+    rectangle.attr('body/fill', 'lightblue')
+    rectangle.attr('body/stroke', '#C94A46')
+    rectangle.attr('body/strokeWidth', 2)
+    rectangle.addTo(graph)
     const rect2 = new shapes.standard.Rectangle()
       .position(200, 50)
       .resize(100, 40)
@@ -37,7 +32,13 @@ export default function ElementComponent() {
         label: { text: 'JointJs', fill: 'black' },
       })
       .addTo(graph)
-    rect1.addTo(graph)
+
+    // ✨ 添加点击事件监听
+    paper.on('cell:pointerclick', (cellView) => {
+      console.log('Clicked Element Model:', cellView.model.toJSON())
+      console.log('Element:', cellView.model)
+    })
+
     return () => {}
   }, [])
 

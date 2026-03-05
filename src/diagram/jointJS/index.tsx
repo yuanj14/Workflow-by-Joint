@@ -8,8 +8,14 @@ import EditOverlayDemo from './demo/05-editoverlay'
 import ToolbarDemo from './demo/06-toolbar'
 import ZoomDemo from './demo/07-zoom'
 import PropertyEditDemo from './demo/08-propertyedit'
+import ConceptValidation from './demo/concept-validation'
 
 const demos = [
+  {
+    key: '00-concept',
+    label: '00 - Concept Validation',
+    Component: ConceptValidation,
+  },
   { key: '01-paper', label: '01 - Paper', Component: PaperDemo },
   { key: '02-element', label: '02 - Element', Component: ElementDemo },
   { key: '03-link', label: '03 - Link', Component: LinkDemo },

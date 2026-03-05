@@ -12,46 +12,135 @@ export default function LinkComponent() {
       background: { color: '#F5F5F5' },
       cellViewNamespace: namespace,
     })
-    const rect1 = new shapes.standard.Rectangle()
-      .position(50, 50)
-      .resize(100, 40)
-      .attr({
+    // ✨ 自定义Rectangle markup，添加highlight层用于选中蓝色高亮
+    const highlightAttr = {
+      ref: 'body',
+      width: 'calc(w)',
+      height: 'calc(h)',
+      rx: 4,
+      ry: 4,
+      fill: 'none',
+      stroke: 'transparent',
+      strokeWidth: 4,
+    }
+
+    const rect1 = new shapes.standard.Rectangle({
+      position: { x: 50, y: 50 },
+      size: { width: 100, height: 40 },
+      attrs: {
         body: { stroke: '#C94A46', rx: 2, ry: 2 },
-        label: { text: 'Source', fill: 'balck' },
-      })
-      .addTo(graph)
-    const rect2 = new shapes.standard.Rectangle()
-      .position(100, 250)
-      .resize(100, 40)
-      .attr({
+        label: { text: 'Source', fill: 'black' },
+        highlight: highlightAttr,
+      },
+      markup: [
+        { tagName: 'rect', selector: 'highlight' },
+        { tagName: 'rect', selector: 'body' },
+        { tagName: 'text', selector: 'label' },
+      ],
+    }).addTo(graph)
+
+    const rect2 = new shapes.standard.Rectangle({
+      position: { x: 100, y: 250 },
+      size: { width: 100, height: 40 },
+      attrs: {
         body: { stroke: '#C94A46', rx: 2, ry: 2 },
-        label: { text: 'Source', fill: 'balck' },
-      })
-      .addTo(graph)
-    // appendLabel return label[] can only as the last one property
-    const link = new shapes.standard.Link()
-      .source(rect1)
-      .target(rect2)
-      .addTo(graph)
-      //link algorithm
-      .router('orthogonal')
-      //link style
-      .connector('straight', { cornerType: 'line' })
-      .appendLabel({ attrs: { text: { text: 'to' } } })
-    // const link = new shapes.standard.Link();
-    // link.source(rect1);
-    // link.target(rect2);
-    // // 先设置 router 和 connector
-    // link.router('orthogonal');
-    // link.connector('straight', { cornerType: 'line' });
-    // link.addTo(graph);
-    // link.appendLabel({
-    //     attrs: {
-    //         text: {
-    //             text: 'to the'
-    //         }
-    //     }
-    // });
+        label: { text: 'Source', fill: 'black' },
+        highlight: highlightAttr,
+      },
+    }).addTo(graph)
+
+    const link = new shapes.standard.Link({
+      source: rect1,
+      target: rect2,
+      markup: [
+        { tagName: 'path', selector: 'wrapper' },
+        { tagName: 'path', selector: 'outline' },
+        { tagName: 'path', selector: 'line' },
+      ],
+      attrs: {
+        wrapper: {
+          fill: 'none',
+          cursor: 'pointer',
+          stroke: 'transparent',
+          strokeWidth: 10,
+        },
+        outline: {
+          connection: true,
+          fill: 'none',
+          pointerEvents: 'none',
+          stroke: 'transparent',
+          strokeWidth: 4,
+          strokeLinejoin: 'round',
+          strokeLinecap: 'butt',
+          targetMarker: {
+            type: 'path',
+            d: 'M 0 0 L 10 5 L 10 -5 Z',
+            fill: 'transparent',
+            stroke: 'transparent',
+            strokeWidth: 4,
+          },
+        },
+        line: {
+          fill: 'none',
+          stroke: '#333',
+          strokeWidth: 1,
+          targetMarker: { d: 'M 0 0 L 10 5 L 10 -5 Z', fill: '#333' },
+        },
+      },
+    })
+    // 📌 router - 路由算法（如何计算连线路径）
+    // orthogonal: 正交路由（直角转折） ✨ Simulink 风格
+    // manhattan: 同 orthogonal
+    // metro: 地铁线风格（更平滑）
+    link.router('orthogonal', { padding: 10 })
+
+    // 📌 connector - 连接器（路径的渲染方式）
+    // straight: 直线连接
+    link.connector('straight')
+    link.connector('straight', { cornerType: 'cubic', cornerRadius: 20 })
+    link.connector('jumpover', { type: 'gap' })
+    link.addTo(graph)
+
+    let selectedCell: dia.CellView | null = null
+
+    function clearSelection() {
+      if (!selectedCell) return
+      if (selectedCell.model.isLink?.()) {
+        selectedCell.model.attr('outline/stroke', 'transparent')
+        selectedCell.model.attr('outline/targetMarker/fill', 'transparent')
+        selectedCell.model.attr('outline/targetMarker/stroke', 'transparent')
+      } else {
+        selectedCell.model.attr('highlight/stroke', 'transparent')
+      }
+      selectedCell = null
+    }
+
+    paper.on('cell:pointerclick', (cellView) => {
+      console.log('Clicked Element Model:', cellView.model.toJSON())
+      console.log('Element:', cellView.model)
+
+      // 移除之前的高亮
+      clearSelection()
+
+      // Link高亮
+      if (cellView.model.isLink?.()) {
+        selectedCell = cellView
+        cellView.model.attr('outline/stroke', '#1890FF')
+        cellView.model.attr('outline/targetMarker/fill', '#1890FF')
+        cellView.model.attr('outline/targetMarker/stroke', '#1890FF')
+      }
+      // Element高亮
+      else if (cellView.model.isElement?.()) {
+        selectedCell = cellView
+        cellView.model.attr('highlight/stroke', '#1890FF')
+      }
+    })
+
+    // 点击空白区域移除高亮
+    paper.on('blank:pointerclick', () => {
+      clearSelection()
+    })
+
     return () => {}
   }, [])
   const ExplanationText = `const rect1 = new shapes.standard.Rectangle()

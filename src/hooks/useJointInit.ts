@@ -45,7 +45,7 @@ const useJointInit = (
 
     const paperConfig: Partial<dia.Paper.Options> = scroller
       ? options
-      : { ...options, el, width: '100%', height: 500 }
+      : { ...options, el, width: '100%', height: 1000 }
 
     const paper = new dia.Paper(paperConfig)
     setGraph(graph)
@@ -70,8 +70,6 @@ const useJointInit = (
     }
 
     return () => {
-      paperScroller?.remove()
-      paper.remove()
       graph.clear()
       console.log('JointJS 卸载');
     }

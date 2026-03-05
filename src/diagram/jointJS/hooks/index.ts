@@ -1,1 +1,0 @@
-export { useJointInit } from './useJointInit'

@@ -1,5 +1,4 @@
 import * as joint from '@joint/plus'
-import { useEffect } from 'react'
 // import '../scss/lab01.scss'
 export default function Lab01() {
   useEffect(() => {
@@ -18,8 +17,8 @@ export default function Lab01() {
     const spacing = 2 * unit
     const flowSpacing = unit / 2
 
-    const rootEl = document.querySelector(':root')
-    rootEl.style.setProperty('--flow-spacing', `${flowSpacing}px`)
+    const rootEl = document.querySelector(':root') as HTMLElement | null
+    rootEl?.style.setProperty('--flow-spacing', `${flowSpacing}px`)
 
     const fontAttributes = {
       fontFamily: 'PPFraktionSans, sans-serif',
@@ -54,11 +53,12 @@ export default function Lab01() {
         // args: { cornerType: "line", cornerPreserveAspectRatio: true }
       }, // bevelled path
     })
+    if (!paperContainer) return
     paperContainer.appendChild(paper.el)
 
     // Flowchart content
 
-    function createStart(x, y, text) {
+    function createStart(x: number, y: number, text: string) {
       return new shapes.standard.Rectangle({
         position: { x: x + 10, y: y + 5 },
         size: { width: 80, height: 50 },
@@ -76,7 +76,7 @@ export default function Lab01() {
       })
     }
 
-    function createStep(x, y, text) {
+    function createStep(x: number, y: number, text: string) {
       return new shapes.standard.Path({
         position: { x, y },
         size: { width: 100, height: 60 },
@@ -96,7 +96,7 @@ export default function Lab01() {
       })
     }
 
-    function createDecision(x, y, text) {
+    function createDecision(x: number, y: number, text: string) {
       return new shapes.standard.Path({
         position: { x: x - 30, y: y - 10 },
         size: { width: 160, height: 80 },
@@ -112,8 +112,8 @@ export default function Lab01() {
     }
 
     function createFlow(
-      source,
-      target,
+      source: { id: joint.dia.Cell.ID },
+      target: { id: joint.dia.Cell.ID },
       sourceAnchor = 'right',
       targetAnchor = 'left',
     ) {
@@ -249,7 +249,7 @@ export default function Lab01() {
     function transformToFitContent() {
       paper.transformToFitContent({
         padding: 30,
-        contentArea: graphBBox,
+        contentArea: graphBBox ?? undefined,
         verticalAlign: 'middle',
         horizontalAlign: 'middle',
       })
@@ -260,7 +260,7 @@ export default function Lab01() {
 
     // Theme switcher.
 
-    document.querySelector('.theme-switch').addEventListener(
+    document.querySelector('.theme-switch')?.addEventListener(
       'click',
       () => {
         document.body.classList.toggle('light-theme')
@@ -301,7 +301,10 @@ export default function Lab01() {
       paper.removeTools()
       dia.HighlighterView.removeAll(paper)
 
-      const snapAnchor = function (coords, endView) {
+      const snapAnchor = function (
+        coords: joint.g.Point,
+        endView: joint.dia.CellView,
+      ) {
         const bbox = endView.model.getBBox()
         // Find the closest point on the bbox border.
         const point = bbox.pointNearestToPoint(coords)

@@ -1,10 +1,5 @@
 import { dia, shapes } from '@joint/core'
-// import { ui } from 'rappid'
 import { useEffect } from 'react'
-import '../../css/text.css'
-import '../App.css'
-//  import {dia, shapes} from 'jointjs'
-import { ui } from 'joint-plus'
 
 export default function PaletteComponent() {
   useEffect(() => {
@@ -150,7 +145,8 @@ export default function PaletteComponent() {
       <p>
         In this part, you need the lib 'rappid' of JointJS+ first and then
         import rappid.min.js and rappid.min.css into ur public floder. or try
-        using work@email to get 30days free,then follow the integration guide to
+        import { ui } from 'joint-plus';
+using work@email to get 30days free,then follow the integration guide to
         add rappid
       </p>
       <h2>Element Palette(left side)</h2>

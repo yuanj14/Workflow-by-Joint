@@ -1,53 +1,36 @@
-// ✨ unplugin-auto-import 示例
-// 配置了 auto-import 后，useState / useEffect 等 React API
-// 无需手动 import，可以直接使用
+// ✨ 三方库 TypeScript 声明示例
 //
-// 未配置时你必须写：
-//   import { useState, useEffect } from 'react'
+// 三方库（如 @joint/plus）在 node_modules 里自带 .d.ts 文件，
+// TypeScript 会自动读取，无需手动声明。
+// 调用时如果类型不匹配，TS 会直接报错。
 //
-// 配置后可以省略上面这行，直接用 👇
+// 自己写的函数没有 .d.ts，所以要在代码里手动写类型注解。
+
+import { dia, shapes } from '@joint/plus'
 
 export default function Temp() {
-  // ✨ 直接使用，无需 import
-  const [count, setCount] = useState(0)
-  const [time, setTime] = useState(new Date().toLocaleTimeString())
-
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date().toLocaleTimeString())
-    }, 1000)
-    return () => clearInterval(timer)
+    const graph = new dia.Graph({}, { cellNamespace: shapes })
+
+    // ✅ 正确：position 符合 { x: number, y: number } 类型
+    const rect = new shapes.standard.Rectangle({
+      position: { x: 100, y: 100 },
+      size: { width: 120, height: 60 },
+      attrs: { label: { text: 'Hello JointJS' } },
+    })
+    graph.addCell(rect)
+
+    // ✅ 三方库方法：getBBox() 返回 Rect | null，TS 自动推导
+    const bbox = graph.getBBox()
+    console.log('bbox:', bbox?.width, bbox?.height)
+
+    // ✅ Cell.ID 类型是 string | number，TS 自动推导
+    const id: dia.Cell.ID = rect.id
+    console.log('id:', id)
   }, [])
 
   return (
     <div style={{ padding: 32, fontFamily: 'monospace' }}>
-      <h2>unplugin-auto-import 示例</h2>
-
-      <section style={{ marginBottom: 24 }}>
-        <p>当前时间（useEffect + setInterval）：</p>
-        <strong style={{ fontSize: 24 }}>{time}</strong>
-      </section>
-
-      <section>
-        <p>计数器（useState）：</p>
-        <button onClick={() => setCount((c) => c - 1)}>-</button>
-        <span style={{ margin: '0 16px', fontSize: 20 }}>{count}</span>
-        <button onClick={() => setCount((c) => c + 1)}>+</button>
-      </section>
-
-      <pre
-        style={{
-          marginTop: 32,
-          background: '#f5f5f5',
-          padding: 16,
-          borderRadius: 8,
-        }}>
-        {`// ❌ 没有 auto-import，需要手动写：
-import { useState, useEffect } from 'react'
-
-// ✅ 配置 auto-import 后，这行可以删掉
-//    构建时会自动注入 import`}
-      </pre>
     </div>
   )
 }

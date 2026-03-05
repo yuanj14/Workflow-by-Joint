@@ -1,6 +1,5 @@
 import { dia, shapes } from '@joint/core'
 import { useEffect } from 'react'
-import '../../css/text.css'
 export default function LinkComponent() {
   useEffect(() => {
     const namespace = shapes

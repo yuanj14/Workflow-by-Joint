@@ -9,12 +9,11 @@ export default function PaperComponent() {
       el: document.getElementById('paper'),
       model: graph,
       width: 300,
-      height: 300,
+      height: 3000,
       background: { color: '#F5F5F5' },
       cellViewNamespace: namespace,
     })
     return () => {
-      // paper.remove();
     }
   }, [])
 
@@ -34,7 +33,6 @@ const paper = new dia.Paper({
       <div
         id="paper"
         style={{ border: '1px solid #ccc', marginBottom: '20px' }}></div>
-
       <h2>Create Paper</h2>
       <p>
         Every JointJs diagram needs a Paper, a Graph and a shared namespace.

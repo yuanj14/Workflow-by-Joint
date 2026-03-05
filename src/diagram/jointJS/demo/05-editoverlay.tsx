@@ -1,7 +1,5 @@
-import { dia, shapes, ui } from 'joint-plus'
+import { dia, shapes, ui } from '@joint/plus'
 import { useEffect } from 'react'
-import '../../css/text.css'
-import '../App.css'
 export default function EditComponent() {
   useEffect(() => {
     const namespace = shapes

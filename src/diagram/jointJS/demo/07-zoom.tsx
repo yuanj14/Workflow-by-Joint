@@ -1,7 +1,5 @@
-import { dia, format, shapes, ui, util } from 'joint-plus'
+import { dia, format, shapes, ui, util } from '@joint/plus'
 import { useEffect } from 'react'
-import '../../css/text.css'
-import '../App.css'
 export default function ZoomComponent() {
   useEffect(() => {
     const namespace = shapes

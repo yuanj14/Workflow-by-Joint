@@ -1,79 +1,55 @@
-import { dia, shapes } from '@joint/plus'
+import { useJointInit } from '@/hooks'
+import { shapes } from '@joint/plus'
 import { useEffect } from 'react'
-export default function PortComponent() {
-  useEffect(() => {
-    const namespace = shapes
-    const graph = new dia.Graph({}, { cellNamespace: namespace })
 
-    const paper = new dia.Paper({
-      el: document.getElementById('paper'),
-      width: 650,
-      height: 200,
-      //越低 帧率越高
-      gridSize: 1,
-      model: graph,
-      background: { color: '#F5F5F5' },
-      cellViewNamespace: namespace,
-      linkPinning: false, // Prevent link being dropped in blank paper area
-      defaultLink: () => new shapes.standard.Link(),
-      defaultConnectionPoint: { name: 'boundary' },
-      validateConnection: function (
-        cellViewS,
-        magnetS,
-        cellViewT,
-        magnetT,
-        end,
-        linkView,
-      ) {
-        // Prevent linking between ports within one element
-        if (cellViewS === cellViewT) return false
-        return true
-      },
-    })
+export default function PortComponent() {
+  const { paperRef, graph, paperScroller } = useJointInit(true, {
+    gridSize: 1,
+    defaultLink: () => new shapes.standard.Link(),
+    defaultConnectionPoint: { name: 'boundary' },
+  })
+
+  useEffect(() => {
+    if (!graph || !paperScroller) return
 
     const port = {
-      //标签属性预设
       label: {
-        position: { name: 'right' },
-        markup: [{ tagName: 'text', selector: 'porttext' }],
+        position: { name: 'left' },
+        markup: [{ tagName: 'text', selector: 'label' }],
       },
-      //Body属性预设
-      markup: [{ tagName: 'rect', selector: 'portBody' }],
-      //属性定义
       attrs: {
         portBody: {
           magnet: true,
           width: 16,
           height: 16,
-          //center point
           x: -8,
           y: -8,
           fill: '#03071E',
         },
-        porttext: { text: 'port' },
+        label: { text: 'port' },
       },
+      markup: [{ tagName: 'rect', selector: 'portBody' }],
     }
 
     const model = new shapes.standard.Rectangle({
       position: { x: 275, y: 50 },
       size: { width: 90, height: 90 },
       attrs: { body: { fill: '#8ECAE6' } },
-      ports: {
-        items: [port, port], // add a port in constructor
-      },
+      ports: { items: [port] },
     })
 
-    model.addPort(port) // add a port using Port API
-
     graph.addCell(model)
+    paperScroller.centerContent()
 
-    return () => {}
-  }, [])
+    return () => {
+      graph.clear()
+    }
+  }, [paperScroller])
 
   return (
-    <div>
+    <div style={{ width: '100%', height: '320px' }}>
       <h2>PortComponent Example</h2>
-      <div id="paper"></div>
+      <div ref={paperRef} style={{ width: '100%', height: '260px' }} />
     </div>
   )
 }

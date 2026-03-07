@@ -1,41 +1,17 @@
-import { dia, shapes } from 'joint-plus'
-import { useEffect } from 'react'
+import { useJointInit } from '@/hooks'
+import { dia, shapes } from '@joint/plus'
 export default function GroupPortComponent() {
   useEffect(() => {
-    const namespace = shapes
-    const graph = new dia.Graph({}, { cellNamespace: namespace })
-
-    const paper = new dia.Paper({
-      el: document.getElementById('paper'),
-      width: 650,
-      height: 200,
+    const { paperRef, graph, paperScroller } = useJointInit(true, {
       gridSize: 1,
-      model: graph,
-      background: { color: '#F5F5F5' },
-      cellViewNamespace: namespace,
-      linkPinning: false, // Prevent link being dropped in blank paper area
       defaultLink: () => new shapes.standard.Link(),
       defaultConnectionPoint: { name: 'boundary' },
-      validateConnection: function (
-        cellViewS,
-        magnetS,
-        cellViewT,
-        magnetT,
-        end,
-        linkView,
-      ) {
-        // Prevent linking between ports within one element
-        if (cellViewS === cellViewT) return false
-        return true
-      },
     })
 
     const portsIn = {
       //端口位置
       markup: [{ tagName: 'circle', selector: 'portBody' }],
-      attrs: {
-        portBody: { magnet: true, r: 10, fill: '#023047', stroke: '#023047' },
-      },
+      attrs: { portBody: { magnet: true, r: 10 } },
       label: {
         position: {
           name: 'left',
@@ -47,14 +23,10 @@ export default function GroupPortComponent() {
 
     const portsOut = {
       position: { name: 'right' },
-      attrs: {
-        portBody: { magnet: true, r: 10, fill: '#E6A502', stroke: '#023047' },
-      },
+      attrs: { portBody: { magnet: true, r: 10, fill: '#E6A502' } },
       label: {
-        position: { name: 'right', args: { y: 0 } },
-        markup: [
-          { tagName: 'text', selector: 'porttext', className: 'label-text' },
-        ],
+        position: { name: 'right' },
+        markup: [{ tagName: 'text', selector: 'porttext' }],
       },
       markup: [{ tagName: 'circle', selector: 'portBody' }],
     }
@@ -72,6 +44,9 @@ export default function GroupPortComponent() {
     model.addPorts([
       { group: 'in', attrs: { porttext: { text: 'in1' } } },
       { group: 'in', attrs: { porttext: { text: 'in2' } } },
+      { group: 'in', attrs: { porttext: { text: 'in2' } } },
+      { group: 'out', attrs: { porttext: { text: 'out' } } },
+      { group: 'out', attrs: { porttext: { text: 'out' } } },
       { group: 'out', attrs: { porttext: { text: 'out' } } },
     ])
 

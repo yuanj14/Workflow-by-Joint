@@ -1,46 +1,23 @@
-import { dia, linkTools, shapes } from 'joint-plus'
-import { useEffect } from 'react'
-import '../../App.css'
-export default function MarkComponent() {
-  useEffect(() => {
-    const namespace = shapes
-    const graph = new dia.Graph({}, { cellNamespace: namespace })
+import { useJointInit } from '@/hooks'
+import { dia, linkTools, shapes } from '@joint/plus'
 
-    const paper = new dia.Paper({
-      el: document.getElementById('paper'),
-      width: 650,
-      height: 200,
-      gridSize: 1,
-      model: graph,
-      background: { color: '#F5F5F5' },
-      cellViewNamespace: namespace,
-      linkPinning: false, // Prevent link being dropped in blank paper area
-      defaultLink: () =>
-        new shapes.standard.Link({ attrs: { wrapper: { cursor: 'default' } } }),
-      defaultConnectionPoint: { name: 'boundary' },
-      //link
-      validateConnection: function (
-        cellViewS,
-        magnetS,
-        cellViewT,
-        magnetT,
-        end,
-        linkView,
-      ) {
-        // Prevent linking from output ports to input ports within one element.
-        if (cellViewS === cellViewT) return false
-        // Prevent linking to output ports.
-        return magnetT && magnetT.getAttribute('port-group') === 'in'
-      },
-      //source
-      validateMagnet: function (cellView, magnet) {
-        // Note that this is the default behavior. It is shown for reference purposes.
-        // Disable linking interaction for magnets marked as passive.
-        return magnet.getAttribute('magnet') !== 'passive'
-      },
-      // Enable mark available for cells & magnets
-      markAvailable: true,
-    })
+export default function MarkComponent() {
+  const { paperRef, graph, paper } = useJointInit(false, {
+    gridSize: 1,
+    linkPinning: false,
+    defaultConnectionPoint: { name: 'boundary' },
+    validateConnection(cellViewS, _magnetS, cellViewT, magnetT) {
+      if (cellViewS === cellViewT) return false
+      return !!magnetT && magnetT.getAttribute('port-group') === 'in'
+    },
+    validateMagnet(_cellView, magnet) {
+      return magnet.getAttribute('magnet') !== 'passive'
+    },
+    markAvailable: true,
+  })
+
+  useEffect(() => {
+    if (!graph || !paper) return
 
     const portsIn = {
       position: { name: 'left' },
@@ -96,7 +73,6 @@ export default function MarkComponent() {
 
     graph.addCells([model, model2])
 
-    // Register events
     paper.on('link:mouseenter', (linkView) => {
       showLinkTools(linkView)
     })
@@ -105,7 +81,6 @@ export default function MarkComponent() {
       linkView.removeTools()
     })
 
-    // Actions
     function showLinkTools(linkView: any) {
       const tools = new dia.ToolsView({
         tools: [
@@ -141,13 +116,15 @@ export default function MarkComponent() {
       linkView.addTools(tools)
     }
 
-    return () => {}
-  }, [])
+    return () => {
+      graph.clear()
+    }
+  }, [graph, paper])
 
   return (
     <div>
       <h2>MarkComponent</h2>
-      <div id="paper"></div>
+      <div ref={paperRef}></div>
     </div>
   )
 }

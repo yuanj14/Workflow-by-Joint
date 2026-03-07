@@ -1,40 +1,15 @@
-import { dia, linkTools, shapes } from 'joint-plus'
+import { useJointInit } from '@/hooks'
+import { dia, linkTools, shapes } from '@joint/plus'
 import { useEffect } from 'react'
+
 export default function PortProperyComponent() {
+  const { paperRef, graph, paper } = useJointInit(false, {
+    gridSize: 1,
+    defaultLink: () => new shapes.standard.Link(),
+    defaultConnectionPoint: { name: 'boundary' },
+  })
   useEffect(() => {
-    const namespace = shapes
-    const graph = new dia.Graph({}, { cellNamespace: namespace })
-
-    const paper = new dia.Paper({
-      el: document.getElementById('paper'),
-      width: 650,
-      height: 200,
-      gridSize: 1,
-      model: graph,
-      background: { color: '#F5F5F5' },
-      cellViewNamespace: namespace,
-      linkPinning: false, // Prevent link being dropped in blank paper area
-      defaultLink: () =>
-        new shapes.standard.Link({
-          attrs: {
-            // wrapper :hover link event
-            wrapper: { cursor: 'pointer' },
-          },
-        }),
-      defaultConnectionPoint: { name: 'boundary' },
-      validateConnection: function (
-        cellViewS,
-        magnetS,
-        cellViewT,
-        magnetT,
-        end,
-        linkView,
-      ) {
-        // Prevent loop linking
-        return magnetS !== magnetT
-      },
-    })
-
+    if (!graph || !paper) return
     const portsIn = {
       label: {
         position: { name: 'left', args: { y: 6 } },
@@ -44,28 +19,17 @@ export default function PortProperyComponent() {
         {
           tagName: 'circle',
           selector: 'portBody',
-          attributes: {
-            magnet: true,
-            r: 10,
-            fill: '#023047',
-            stroke: '#023047',
-          },
+          attributes: { magnet: true, r: 10, fill: '#023047' },
         },
       ],
     }
 
     const portsOut = {
-      // 外层positon 形状位置
-      position: { name: 'bottom' },
-      attrs: {
-        portBody: { magnet: true, r: 10, fill: '#E6A502', stroke: '#023047' },
-      },
+      position: { name: 'right' },
+      attrs: { portBody: { magnet: true, r: 10, fill: '#E6A502' } },
       label: {
-        // 文本位置
-        position: { name: 'right', args: { y: 6 } },
-        markup: [
-          { tagName: 'text', selector: 'label', className: 'label-text' },
-        ],
+        position: { name: 'right' },
+        markup: [{ tagName: 'text', selector: 'label' }],
       },
       markup: [{ tagName: 'circle', selector: 'portBody' }],
     }
@@ -81,18 +45,73 @@ export default function PortProperyComponent() {
       },
       ports: { groups: { in: portsIn, out: portsOut } },
     })
-
+    // port实例id 对应model的source/target.port属性
     model.addPorts([
-      { group: 'in', id: 'in1', attrs: { label: { text: 'in1' } } },
+      { group: 'in', id: 'source : port', attrs: { label: { text: 'in1' } } },
       { group: 'in', id: 'in2', attrs: { label: { text: 'in2' } } },
       { group: 'out', id: 'out', attrs: { label: { text: 'out' } } },
     ])
 
     const model2 = model.clone().translate(300, 0).attr('label/text', 'Model 2')
 
-    graph.addCells([model, model2])
+    const customPort = {
+      id: 'custom-port-id',
+      label: {
+        position: { name: 'left' },
+        markup: [{ tagName: 'text', selector: 'label' }],
+      },
+      attrs: {
+        portBody: {
+          magnet: true,
+          width: 16,
+          height: 16,
+          x: -8,
+          y: -8,
+          fill: '#03071E',
+        },
+        label: { text: 'custom-port-in' },
+      },
+      markup: [{ tagName: 'rect', selector: 'portBody' }],
+    }
 
-    // Register events
+    const portIdBase = new shapes.standard.Rectangle({
+      position: { x: 125, y: 260 },
+      size: { width: 140, height: 90 },
+      attrs: {
+        body: { fill: '#8ECAE6' },
+        label: { text: 'PortID Base', fontSize: 13, y: -8 },
+      },
+      ports: { items: [customPort] },
+    })
+
+    const portIdDemo = portIdBase
+      .clone()
+      .translate(300, 0)
+      .attr('label/text', 'PortID Demo')
+
+    portIdDemo.portProp('custom-port-id', 'attrs/portBody', {
+      r: 8,
+      fill: 'darkslateblue',
+    })
+
+    const portId = portIdDemo.getPorts()[0]?.id
+    let customData: unknown = null
+
+    if (portId) {
+      portIdDemo.portProp(portId, 'custom', { testAttribute: true })
+      portIdDemo.portProp(portId, 'attrs/portBody/fill', 'tomato')
+      customData = portIdDemo.portProp(portId, 'custom')
+    }
+
+    graph.addCells([model, model2, portIdBase, portIdDemo])
+
+    const portIdMessage = document.getElementById('paper-portid-message')
+    if (portIdMessage) {
+      portIdMessage.textContent = `portId: ${portId} | custom: ${JSON.stringify(
+        customData,
+      )}`
+    }
+
     paper.on('link:mouseenter', (linkView) => {
       showLinkTools(linkView)
     })
@@ -100,8 +119,9 @@ export default function PortProperyComponent() {
     paper.on('link:mouseleave', (linkView) => {
       linkView.removeTools()
     })
-    //发生🔗连接变化
     graph.on('change:source change:target', function (link) {
+      console.log(link)
+
       //name attrs label text
       const sourcePort = link.get('source').port
       const sourceId = link.get('source').id
@@ -164,13 +184,14 @@ export default function PortProperyComponent() {
       linkView.addTools(tools)
     }
     return () => {}
-  }, [])
+  }, [graph, paper])
 
   return (
     <div>
       <h2>PortProperyComponent</h2>
-      <div id="paper"></div>
+      <div ref={paperRef}></div>
       <div id="paper-links-message"></div>
+      <div id="paper-portid-message"></div>
     </div>
   )
 }

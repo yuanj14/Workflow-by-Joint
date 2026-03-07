@@ -1,44 +1,27 @@
-import { dia, linkTools, shapes } from 'joint-plus'
+import { useJointInit } from '@/hooks'
+import { dia, linkTools, shapes } from '@joint/plus'
 import { useEffect } from 'react'
-export default function LinkRestrictionComponent() {
-  useEffect(() => {
-    const namespace = shapes
-    const graph = new dia.Graph({}, { cellNamespace: namespace })
 
-    const paper = new dia.Paper({
-      el: document.getElementById('paper'),
-      width: 650,
-      height: 200,
-      gridSize: 1,
-      model: graph,
-      background: { color: '#F5F5F5' },
-      cellViewNamespace: namespace,
-      linkPinning: false, // Prevent link being dropped in blank paper area
-      defaultLink: () =>
-        new shapes.standard.Link({ attrs: { wrapper: { cursor: 'default' } } }),
-      defaultConnectionPoint: { name: 'boundary' },
-      validateConnection: function (
-        cellViewS,
-        magnetS,
-        cellViewT,
-        magnetT,
-        end,
-        linkView,
-      ) {
-        // Prevent linking from input ports
-        if (magnetS && magnetS.getAttribute('port-group') === 'in') return false
-        // Prevent linking from output ports to input ports within one element
-        if (cellViewS === cellViewT) return false
-        // Prevent linking to output ports
-        return magnetT && magnetT.getAttribute('port-group') === 'in'
-      },
-      validateMagnet: function (cellView, magnet) {
-        // Note that this is the default behavior. It is shown for reference purposes.
-        // Disable linking interaction for magnets marked as passive
-        return magnet.getAttribute('magnet') !== 'passive'
-      },
-      snapLinks: { radius: 10 },
-    })
+export default function LinkRestrictionComponent() {
+  const { paperRef, graph, paper } = useJointInit(false, {
+    gridSize: 1,
+    linkPinning: false,
+    defaultLink: () =>
+      new shapes.standard.Link({ attrs: { wrapper: { cursor: 'default' } } }),
+    defaultConnectionPoint: { name: 'boundary' },
+    validateConnection(cellViewS, magnetS, cellViewT, magnetT) {
+      if (magnetS && magnetS.getAttribute('port-group') === 'in') return false
+      if (cellViewS === cellViewT) return false
+      return !!magnetT && magnetT.getAttribute('port-group') === 'in'
+    },
+    validateMagnet(_cellView, magnet) {
+      return magnet.getAttribute('magnet') !== 'passive'
+    },
+    snapLinks: { radius: 10 },
+  })
+
+  useEffect(() => {
+    if (!graph || !paper) return
 
     const portsIn = {
       position: { name: 'left' },
@@ -102,7 +85,6 @@ export default function LinkRestrictionComponent() {
 
     graph.addCells([model, model2])
 
-    // Register events
     paper.on('link:mouseenter', (linkView) => {
       showLinkTools(linkView)
     })
@@ -110,9 +92,7 @@ export default function LinkRestrictionComponent() {
     paper.on('link:mouseleave', (linkView) => {
       linkView.removeTools()
     })
-    //发生🔗连接变化
     graph.on('change:source change:target', function (link) {
-      //name attrs label text
       const sourcePort = link.get('source').port
       const sourceId = link.get('source').id
       const targetPort = link.get('target').port
@@ -129,11 +109,8 @@ export default function LinkRestrictionComponent() {
       appendMessage(paragraph)
     })
 
-    // Actions
     function appendMessage(p: HTMLParagraphElement) {
       const body = document.getElementById('paper-links-message')!
-
-      // Remove paragraph from DOM if it already exists
       body.innerHTML = ''
 
       body.appendChild(p)
@@ -173,13 +150,16 @@ export default function LinkRestrictionComponent() {
       })
       linkView.addTools(tools)
     }
-    return () => {}
-  }, [])
+
+    return () => {
+      graph.clear()
+    }
+  }, [graph, paper])
 
   return (
     <div>
       <h2>LinkRestrictionComponent</h2>
-      <div id="paper"></div>
+      <div ref={paperRef}></div>
       <div id="paper-links-message"></div>
     </div>
   )

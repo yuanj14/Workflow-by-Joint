@@ -1,13 +1,13 @@
 import { useJointInit } from '@/hooks'
-import { dia, shapes } from '@joint/plus'
+import { shapes } from '@joint/plus'
 export default function GroupPortComponent() {
+  const { paperRef, graph, paperScroller } = useJointInit(true, {
+    gridSize: 1,
+    defaultLink: () => new shapes.standard.Link(),
+    defaultConnectionPoint: { name: 'boundary' },
+  })
   useEffect(() => {
-    const { paperRef, graph, paperScroller } = useJointInit(true, {
-      gridSize: 1,
-      defaultLink: () => new shapes.standard.Link(),
-      defaultConnectionPoint: { name: 'boundary' },
-    })
-
+    if (!graph || !paperScroller) return
     const portsIn = {
       //端口位置
       markup: [{ tagName: 'circle', selector: 'portBody' }],
@@ -53,12 +53,12 @@ export default function GroupPortComponent() {
     graph.addCell(model)
 
     return () => {}
-  }, [])
+  }, [graph, paperScroller])
 
   return (
     <div>
       <h2>GroupPortComponent</h2>
-      <div id="paper"></div>
+      <div ref={paperRef}></div>
     </div>
   )
 }

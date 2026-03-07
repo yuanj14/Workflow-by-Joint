@@ -17,18 +17,16 @@ export default function LinkComponent() {
       ref: 'body',
       width: 'calc(w)',
       height: 'calc(h)',
-      rx: 4,
-      ry: 4,
       fill: 'none',
       stroke: 'transparent',
-      strokeWidth: 4,
+      strokeWidth: 2,
     }
 
     const rect1 = new shapes.standard.Rectangle({
       position: { x: 50, y: 50 },
       size: { width: 100, height: 40 },
       attrs: {
-        body: { stroke: '#C94A46', rx: 2, ry: 2 },
+        body: { strokeWidth:0, rx: 2, ry: 2 },
         label: { text: 'Source', fill: 'black' },
         highlight: highlightAttr,
       },
@@ -65,11 +63,11 @@ export default function LinkComponent() {
           strokeWidth: 10,
         },
         outline: {
-          connection: true,
+          connection: true, // 绑定 link 的真实路径
           fill: 'none',
           pointerEvents: 'none',
           stroke: 'transparent',
-          strokeWidth: 4,
+          strokeWidth: 3,
           strokeLinejoin: 'round',
           strokeLinecap: 'butt',
           targetMarker: {
@@ -77,13 +75,13 @@ export default function LinkComponent() {
             d: 'M 0 0 L 10 5 L 10 -5 Z',
             fill: 'transparent',
             stroke: 'transparent',
-            strokeWidth: 4,
+            strokeWidth: 3,
           },
         },
         line: {
           fill: 'none',
           stroke: '#333',
-          strokeWidth: 1,
+          strokeWidth: 0.5,
           targetMarker: { d: 'M 0 0 L 10 5 L 10 -5 Z', fill: '#333' },
         },
       },
@@ -97,8 +95,8 @@ export default function LinkComponent() {
     // 📌 connector - 连接器（路径的渲染方式）
     // straight: 直线连接
     link.connector('straight')
-    link.connector('straight', { cornerType: 'cubic', cornerRadius: 20 })
     link.connector('jumpover', { type: 'gap' })
+    link.connector('straight', { cornerType: 'cubic', cornerRadius: 20 })
     link.addTo(graph)
 
     let selectedCell: dia.CellView | null = null
@@ -117,7 +115,6 @@ export default function LinkComponent() {
 
     paper.on('cell:pointerclick', (cellView) => {
       console.log('Clicked Element Model:', cellView.model.toJSON())
-      console.log('Element:', cellView.model)
 
       // 移除之前的高亮
       clearSelection()
@@ -131,6 +128,7 @@ export default function LinkComponent() {
       }
       // Element高亮
       else if (cellView.model.isElement?.()) {
+        console.log('Element:', cellView.model)
         selectedCell = cellView
         cellView.model.attr('highlight/stroke', '#1890FF')
       }
@@ -143,54 +141,9 @@ export default function LinkComponent() {
 
     return () => {}
   }, [])
-  const ExplanationText = `const rect1 = new shapes.standard.Rectangle()
-            .position(50, 50)
-            .resize(100, 40)
-            .attr({
-                body: { stroke: '#C94A46', rx: 2, ry: 2 },
-                label: { text: 'Source', fill: "balck" }
-            })
-            .addTo(graph)
-        const rect2 = new shapes.standard.Rectangle()
-            .position(200, 50)
-            .resize(100, 40)
-            .attr({
-                body: { stroke: '#C94A46', rx: 2, ry: 2 },
-                label: { text: 'Source', fill: "balck" }
-            })
-            .addTo(graph)
-        const link = new shapes.standard.Link()
-            .source(rect1)
-            .target(rect2)
-            .router('orthogonal')
-            .connector('straight', {  cornerType: 'line' })
-            .addTo(graph)
-            .appendLabel({
-                attrs : {
-                    text : {
-                        text : 'to'
-                    }
-                }
-            })`
   return (
-    <div>
+    <>
       <div id="paper"></div>
-      <h2>Linke Component example</h2>
-      <p>
-        As a next step,let we connect two elements with a{' '}
-        <code className="inline">linke</code>
-        We need to specify two elements as the source and target in a link
-        instance,and we also need to make it clear that the Link belong to our
-        Graph Model(Data/Controller layout).
-      </p>
-      <p>
-        Finally, A better way to code elements in JointJs called `Method
-        Chaining`. In combination with the above, we have sample code as
-        follows:{' '}
-      </p>
-      <pre className="code-block">
-        <code className="block">{ExplanationText}</code>
-      </pre>
-    </div>
+    </>
   )
 }

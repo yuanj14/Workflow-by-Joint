@@ -32,7 +32,7 @@ export default function Links() {
     })
 
     linkB.source(linkA, {
-      linkAnchor: { name: 'connectionRatio', args: { ratio: 0.8 } },
+      anchor: { name: 'connectionRatio', args: { ratio: 0.8 } },
     })
 
     graph.addCell([linkA, linkB, sourceElement, targetElement, element3])

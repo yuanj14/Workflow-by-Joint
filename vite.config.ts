@@ -29,7 +29,7 @@ export default defineConfig(({ mode, command }) => {
     // 生产配置
     build: {
       // https://vite.dev/config/build-options.html
-      sourcemap: PRODUCTION_ENV ? false : 'inline',
+      sourcemap: true,
       outDir: 'dist',
       assetsDir: 'assets',
     },

@@ -1,23 +1,21 @@
-import * as joint from '@joint/plus'
-// import '../scss/lab01.scss'
+import { dia, highlighters, linkTools, shapes } from '@joint/plus'
+import { useEffect } from 'react'
+import '../scss/lab01.scss'
+
 export default function Lab01() {
   useEffect(() => {
-    work()
-    // test();
+    initializeDiagram()
     return () => {}
   }, [])
 
-  function work() {
-    const { dia, shapes, highlighters, linkTools } = joint
-
+  function initializeDiagram() {
     // Styles
-
     const unit = 4
     const bevel = 2 * unit
     const spacing = 2 * unit
     const flowSpacing = unit / 2
 
-    const rootEl = document.querySelector(':root') as HTMLElement | null
+    const rootEl = document.querySelector(':root')
     rootEl?.style.setProperty('--flow-spacing', `${flowSpacing}px`)
 
     const fontAttributes = {
@@ -28,7 +26,6 @@ export default function Lab01() {
     }
 
     // Paper & Graph
-
     const paperContainer = document.getElementById('canvas')
     const graph = new dia.Graph({}, { cellNamespace: shapes })
     const paper = new dia.Paper({
@@ -36,29 +33,31 @@ export default function Lab01() {
       cellViewNamespace: shapes,
       width: '100%',
       height: '100%',
-      async: true,
-      sorting: dia.Paper.sorting.APPROX,
       background: { color: 'transparent' },
+      // link appendLabels: label 不脱离连接线
       snapLabels: true,
-      clickThreshold: 10,
       interactive: { linkMove: false },
       gridSize: 5,
       defaultConnectionPoint: {
         name: 'boundary',
         args: { offset: spacing, extrapolate: true },
       },
-      defaultRouter: { name: 'rightAngle', args: { margin: unit * 7 } },
+      defaultRouter: { name: 'rightAngle', args: { margin: unit * 8} },
       defaultConnector: {
-        name: 'rounded',
-        // args: { cornerType: "line", cornerPreserveAspectRatio: true }
-      }, // bevelled path
+        name: 'straight',
+        args: {
+          cornerType: 'cubic',
+          cornerRadius: 20,
+          cornerPreserveAspectRatio: true, // ← 保持宽高比，让曲线对称
+        },
+      },
     })
     if (!paperContainer) return
     paperContainer.appendChild(paper.el)
 
     // Flowchart content
 
-    function createStart(x: number, y: number, text: string) {
+    function createStart(x, y, text) {
       return new shapes.standard.Rectangle({
         position: { x: x + 10, y: y + 5 },
         size: { width: 80, height: 50 },
@@ -76,7 +75,7 @@ export default function Lab01() {
       })
     }
 
-    function createStep(x: number, y: number, text: string) {
+    function createStep(x, y, text) {
       return new shapes.standard.Path({
         position: { x, y },
         size: { width: 100, height: 60 },
@@ -96,7 +95,7 @@ export default function Lab01() {
       })
     }
 
-    function createDecision(x: number, y: number, text: string) {
+    function createDecision(x, y, text) {
       return new shapes.standard.Path({
         position: { x: x - 30, y: y - 10 },
         size: { width: 160, height: 80 },
@@ -112,13 +111,12 @@ export default function Lab01() {
     }
 
     function createFlow(
-      source: { id: joint.dia.Cell.ID },
-      target: { id: joint.dia.Cell.ID },
+      source,
+      target,
       sourceAnchor = 'right',
       targetAnchor = 'left',
     ) {
       return new shapes.standard.Link({
-        // anchor 连接点位置
         source: { id: source.id, anchor: { name: sourceAnchor } },
         target: { id: target.id, anchor: { name: targetAnchor } },
         z: 2,
@@ -130,13 +128,7 @@ export default function Lab01() {
               d: `M 0 0 L ${2 * unit} ${unit} L ${2 * unit} -${unit} Z`,
             },
           },
-          // The `outline` path is added to the `standard.Link` below in `markup``
-          // We want to keep the `wrapper` path to do its original job,
-          // which is the hit testing
-          // outline: {
-          //     class: "jj-flow-outline",
-          //     connection: true
-          // }
+          outline: { class: 'jj-flow-outline', connection: true },
         },
         markup: [
           {
@@ -235,21 +227,15 @@ export default function Lab01() {
       createFlow(qualityCheck, sendOrderToWarehouse, 'left', 'left').labels([
         { attrs: { labelText: { text: 'Not Ok' } } },
       ]),
-      // .vertices([
-      //     { x: 100, y: 490 },
-      //     { x: 100, y: 280 }
-      // ])
     ])
 
-    // Automatically scale the content to fit the paper.
-
-    // graph model
+    // Automatically scale the content to fit the paper
     const graphBBox = graph.getBBox()
 
     function transformToFitContent() {
       paper.transformToFitContent({
         padding: 30,
-        contentArea: graphBBox ?? undefined,
+        contentArea: graphBBox,
         verticalAlign: 'middle',
         horizontalAlign: 'middle',
       })
@@ -258,8 +244,7 @@ export default function Lab01() {
     window.addEventListener('resize', () => transformToFitContent())
     transformToFitContent()
 
-    // Theme switcher.
-
+    // Theme switcher
     document.querySelector('.theme-switch')?.addEventListener(
       'click',
       () => {
@@ -268,17 +253,13 @@ export default function Lab01() {
       false,
     )
 
-    // Add a frame around the element when the mouse enters the element.
-    // mask as MaskHighlighter
+    // Add a frame around the element when the mouse enters the element
     const { mask: MaskHighlighter, stroke: StrokeHighlighter } = highlighters
 
-    paper.on('cell:mouseenter', (cellView, evt) => {
+    paper.on('cell:mouseenter', (cellView) => {
       let selector, padding
       if (cellView.model.isLink()) {
-        // console.log(StrokeHighlighter.get(cellView, "selection"));
-        // TODO stroke
         if (StrokeHighlighter.get(cellView, 'selection')) return
-        // In case of a link, the frame is added around the label.
         selector = { label: 0, selector: 'labelBody' }
         padding = unit / 2
       } else {
@@ -293,7 +274,7 @@ export default function Lab01() {
       frame.el.classList.add('jj-frame')
     })
 
-    paper.on('cell:mouseleave', (cellView) => {
+    paper.on('cell:mouseleave', () => {
       MaskHighlighter.removeAll(paper, 'frame')
     })
 
@@ -301,15 +282,10 @@ export default function Lab01() {
       paper.removeTools()
       dia.HighlighterView.removeAll(paper)
 
-      const snapAnchor = function (
-        coords: joint.g.Point,
-        endView: joint.dia.CellView,
-      ) {
+      const snapAnchor = (coords, endView) => {
         const bbox = endView.model.getBBox()
-        // Find the closest point on the bbox border.
         const point = bbox.pointNearestToPoint(coords)
         const center = bbox.center()
-        // Snap the point to the center of the bbox if it's close enough.
         const snapRadius = 10
         if (Math.abs(point.x - center.x) < snapRadius) {
           point.x = center.x
@@ -334,17 +310,14 @@ export default function Lab01() {
       })
       toolsView.el.classList.add('jj-flow-tools')
       cellView.addTools(toolsView)
-      // Add copy of the link <path> element behind the link.
-      // The selection link frame should be behind all elements and links.
-      // const strokeHighlighter = StrokeHighlighter.add(
-      //     cellView,
-      //     "root",
-      //     "selection",
-      //     {
-      //         layer: dia.Paper.Layers.BACK
-      //     }
-      // );
-      // strokeHighlighter.el.classList.add("jj-flow-selection");
+
+      const strokeHighlighter = StrokeHighlighter.add(
+        cellView,
+        'root',
+        'selection',
+        { layer: dia.Paper.Layers.BACK },
+      )
+      strokeHighlighter.el.classList.add('jj-flow-selection')
     })
 
     paper.on('blank:pointerdown', () => {
@@ -355,8 +328,7 @@ export default function Lab01() {
 
   return (
     <div>
-      <h2>Lab01</h2>
-      <div id="canvas"></div>
+      <div id="canvas" />
       <div className="theme-switch" title="Switch between light and dark mode">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -365,16 +337,16 @@ export default function Lab01() {
           viewBox="0 0 24 24"
           fill="none"
           stroke="#dde6ed"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="light-icon">
           <path
             d="M12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5C8.41015 5.5 5.5 8.41015 5.5 12C5.5 15.5899 8.41015 18.5 12 18.5Z"
-            stroke-width="1.5"
+            strokeWidth="1.5"
           />
           <path
             d="M19.14 19.14L19.01 19.01M19.01 4.99L19.14 4.86L19.01 4.99ZM4.86 19.14L4.99 19.01L4.86 19.14ZM12 2.08V2V2.08ZM12 22V21.92V22ZM2.08 12H2H2.08ZM22 12H21.92H22ZM4.99 4.99L4.86 4.86L4.99 4.99Z"
-            stroke-width="2"
+            strokeWidth="2"
           />
         </svg>
         <svg
@@ -386,9 +358,9 @@ export default function Lab01() {
           className="dark-icon">
           <path d="M12.0557 3.59974C12.2752 3.2813 12.2913 2.86484 12.0972 2.53033C11.9031 2.19582 11.5335 2.00324 11.1481 2.03579C6.02351 2.46868 2 6.76392 2 12C2 17.5228 6.47715 22 12 22C17.236 22 21.5313 17.9764 21.9642 12.8518C21.9967 12.4664 21.8041 12.0968 21.4696 11.9027C21.1351 11.7086 20.7187 11.7248 20.4002 11.9443C19.4341 12.6102 18.2641 13 17 13C13.6863 13 11 10.3137 11 6.99996C11 5.73589 11.3898 4.56587 12.0557 3.59974Z" />
         </svg>
-        <div className="switch"></div>
+        <div className="switch" />
       </div>
-      <a target="_blank" href="https://www.jointjs.com">
+      <a target="_blank" href="https://www.jointjs.com" rel="noreferrer">
         <svg
           version="1.2"
           id="logo"

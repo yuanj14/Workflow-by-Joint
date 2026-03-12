@@ -6,14 +6,12 @@ import { useEffect, useRef, useState } from 'react'
  * @description 封装 Graph + Paper 的创建、挂载和清理
  *
  * @param scroller 是否启用 PaperScroller 模式，默认 false
- * @param paperOptions Paper 额外配置（透传）
+ * @param paperOptions Paper 额外配置
  *
  * @example
- * // ✨ 简单模式
  * const { paperRef, graph, paper } = useJointInit()
  *
  * @example
- * // ✨ 滚动模式
  * const { paperRef, graph, paper } = useJointInit(true)
  */
 const useJointInit = (
@@ -30,6 +28,10 @@ const useJointInit = (
   useEffect(() => {
     const el = paperRef.current
     if (!el) return
+
+    Object.assign(el.style, { width: '100%', height: '100%' })
+    // 清空容器，避免重复挂载时的 DOM 冲突
+    el.replaceChildren()
 
     const namespace = shapes
     const graph = new dia.Graph({}, { cellNamespace: namespace })
@@ -70,8 +72,11 @@ const useJointInit = (
     }
 
     return () => {
+      // 清理内存资源 防止泄漏
       graph.clear()
-      console.log('JointJS 卸载');
+      paperScroller?.remove()
+      paper.remove()
+      console.log('JointJS 卸载')
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

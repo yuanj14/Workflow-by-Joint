@@ -1,36 +1,94 @@
-// ✨ 三方库 TypeScript 声明示例
-//
-// 三方库（如 @joint/plus）在 node_modules 里自带 .d.ts 文件，
-// TypeScript 会自动读取，无需手动声明。
-// 调用时如果类型不匹配，TS 会直接报错。
-//
-// 自己写的函数没有 .d.ts，所以要在代码里手动写类型注解。
-
+import { useJointInit } from '@/hooks'
 import { dia, shapes } from '@joint/plus'
+import { useEffect } from 'react'
 
 export default function Temp() {
+  const { paperRef, graph, paper, paperScroller } = useJointInit(true, {
+    gridSize: 1,
+    defaultLink: () => new shapes.standard.Link(),
+    defaultConnectionPoint: { name: 'boundary' },
+  })
+
   useEffect(() => {
-    const graph = new dia.Graph({}, { cellNamespace: shapes })
+    if (!graph || !paper || !paperScroller) return
 
-    // ✅ 正确：position 符合 { x: number, y: number } 类型
-    const rect = new shapes.standard.Rectangle({
-      position: { x: 100, y: 100 },
-      size: { width: 120, height: 60 },
-      attrs: { label: { text: 'Hello JointJS' } },
+    // ✨ 使用标准 Rectangle + 自定义 ports 配置
+    const sumBlock = new shapes.standard.Rectangle({
+      position: { x: 200, y: 150 },
+      size: { width: 120, height: 100 },
+      attrs: {
+        body: { fill: '#FFD60A', stroke: '#000', strokeWidth: 2 },
+        label: {
+          text: 'Sum Block',
+          textVerticalAnchor: 'top',
+          refY: '50%',
+          refY2: 10,
+          cursor: 'text',
+        },
+      },
+      ports: {
+        items: [
+          { id: 'in1', group: 'in' },
+          { id: 'in2', group: 'in' },
+          { id: 'out', group: 'out' },
+        ],
+        groups: {
+          in: {
+            position: 'left',
+            label: { position: 'outside' },
+            attrs: {
+              portBody: { r: 6, fill: '#003049', stroke: '#000', magnet: true },
+            },
+          },
+          out: {
+            position: 'right',
+            attrs: {
+              portBody: { r: 6, fill: '#FB5607', stroke: '#000', magnet: true },
+            },
+          },
+        },
+      },
     })
-    graph.addCell(rect)
 
-    // ✅ 三方库方法：getBBox() 返回 Rect | null，TS 自动推导
-    const bbox = graph.getBBox()
-    console.log('bbox:', bbox?.width, bbox?.height)
+    graph.addCell(sumBlock)
 
-    // ✅ Cell.ID 类型是 string | number，TS 自动推导
-    const id: dia.Cell.ID = rect.id
-    console.log('id:', id)
-  }, [])
+    // 📝 用 paper.on 监听，通过 data-selector 区分 body / label
+    paper.on(
+      'element:pointerdown',
+      (elementView: dia.ElementView, evt: dia.Event) => {
+        const target = evt.target as SVGElement
+        // ✨ 用原生 querySelector 替代 findNode，JointJS 在 DOM 上标记 data-selector
+        const labelNode = elementView.el.querySelector<SVGElement>(
+          '[joint-selector="label"]',
+        )
+        const isLabel = labelNode?.contains(target)
+
+        if (isLabel) {
+          // ✨ 禁用拖拽，pointerup 时恢复
+          elementView.setInteractivity({ elementMove: false })
+
+          console.log('✨ 点击了 Label Text:', labelNode?.textContent)
+        } else {
+          console.log('✨ 点击了 Body')
+        }
+      },
+    )
+    paperScroller.centerContent()
+    return () => {
+      graph.clear()
+    }
+  }, [graph, paper, paperScroller])
 
   return (
-    <div style={{ padding: 32, fontFamily: 'monospace' }}>
+    <div
+      style={{
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+      <h2 style={{ margin: '16px 0 0 16px' }}>SumBlock Experiment</h2>
+      <div ref={paperRef} style={{ flex: 1 }} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import '@joint/plus/joint-plus.css'
-import JointJS from '@/diagram/jointJS/features/Diagram/Links.tsx'
+import Temp from '../codepen/lab/Temp'
+import Availablemagent from './features/Ports/05-Availablemagent'
+import Tools from './features/Shapetools/tools'
 export default function () {
-  return (
-    <JointJS/>
-  )
+  return <Tools />
 }

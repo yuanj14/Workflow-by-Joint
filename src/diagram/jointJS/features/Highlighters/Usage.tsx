@@ -19,8 +19,6 @@ export default function Usage() {
       model: graph,
       cellViewNamespace: shapes,
       clickThreshold: 5,
-      // highlighting: false,
-      async: true,
       background: { color: '#F5F5F5' },
     })
 
@@ -78,7 +76,6 @@ export default function Usage() {
       source: { x: 50, y: 50 },
       target: { x: 300, y: 70 },
       // source -> vertices -> target
-      vertices: [{ x: 150, y: 50 }],
       labels: [
         {
           markup: [
@@ -89,21 +86,13 @@ export default function Usage() {
             labelText: {
               text: 'Label',
               fill: '#000000',
-              fontSize: 14,
-              fontFamily: 'sans-serif',
               textAnchor: 'middle',
               textVerticalAnchor: 'middle',
-              pointerEvents: 'none',
+              pointerEvents: 'none', // svg 事件穿透，事件传递到下层元素
             },
             labelBody: {
               ref: 'labelText',
               fill: '#ffffff',
-              stroke: 'black',
-              strokeWidth: 2,
-              rx: 3,
-              ry: 3,
-              refWidth: '100%',
-              refHeight: '100%',
               refWidth2: 8,
               refHeight2: 8,
               refX: -4,
@@ -118,47 +107,25 @@ export default function Usage() {
 
     const link2 = link1
       .clone()
-      .set({
-        source: { x: 50, y: 100 },
-        target: { x: 300, y: 120 },
-        vertices: [{ x: 150, y: 100 }],
-      })
+      .set({ source: { x: 50, y: 100 }, target: { x: 300, y: 120 } })
 
     const link3 = link1
       .clone()
-      .set({
-        source: { x: 50, y: 150 },
-        target: { x: 300, y: 170 },
-        vertices: [{ x: 150, y: 150 }],
-      })
+      .set({ source: { x: 50, y: 150 }, target: { x: 300, y: 170 } })
 
     graph.addCells([rect1, rect2, rect3, link1, link2, link3])
-
     const mask = highlighters.mask
-
-    // console.log(rect1.findView(paper));
-    // console.log(paper.findViewByModel(rect1));
-
-    mask.add(
-      rect1.findView(paper),
-      // {selector : body}
-      //rect
-      'body',
-      'example-id',
-      //highlighters
-      {
-        layer: 'back',
-        attrs: {
-          stroke: '#4666E5',
-          'stroke-width': 3,
-          'stroke-linejoin': 'round',
-        },
+    mask.add(rect1.findView(paper), 'body', 'example-id', {
+      layer: 'back',
+      attrs: {
+        stroke: '#4666E5',
+        'stroke-width': 3,
+        'stroke-linejoin': 'round',
       },
-    )
+    })
 
     mask.add(
       rect2.findView(paper),
-      // {port : xxxx}
       { port: 'port1' },
       'example-id',
       {
@@ -245,6 +212,7 @@ export default function Usage() {
         deep: true,
         attrs: { stroke: '#FF4365', 'stroke-width': 3 },
       })
+      console.log('element clicked', cellView)
     })
 
     paper.on('link:label:pointerdown', (cellView, evt) => {
@@ -258,7 +226,7 @@ export default function Usage() {
 
     paper.on('link:pointerclick', (cellView) => {
       mask.remove(cellView)
-      mask.add(cellView, { selector: 'line' }, 'link-highlight', {
+      mask.add(cellView, 'wrapper', 'link-highlight', {
         layer: 'back',
         attrs: {
           stroke: '#FF4365',
